@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class CellScript : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public bool alive;
 
-    // Update is called once per frame
-    void Update()
+    SpriteRenderer spriteRenderer;
+
+    public void UpdateStatus()
     {
-        
+        spriteRenderer ??= GetComponent<SpriteRenderer>();
+
+        //if (spriteRenderer == null )
+        //	spriteRenderer = GetComponent<SpriteRenderer>();
+
+        spriteRenderer.enabled = alive;
     }
 }
