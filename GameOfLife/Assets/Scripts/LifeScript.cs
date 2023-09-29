@@ -5,10 +5,12 @@ using UnityEngine;
 public class LifeScript : MonoBehaviour
 {
     public GameObject cellPrefab;
-    CellScript[,] cells;
-    float cellSize = 0.25f; //Size of our cells
-    int numberOfColums, numberOfRows;
-    int spawnChancePercentage = 15;
+    private CellScript[,] cells;
+    public List<Transform> aliveCellsList = new List<Transform>();
+    private float cellSize = 0.25f; //Size of our cells
+    private int numberOfColums, numberOfRows;
+    private int spawnChancePercentage = 15;
+    public float updateTimer;
 
     void Start()
     {
@@ -48,25 +50,40 @@ public class LifeScript : MonoBehaviour
                 }
 
                 cells[x, y].UpdateStatus();
+                if (cells[x, y].alive)
+                {
+                    aliveCellsList.Add(cells[x, y].GetComponent<Transform>());
+                }
             }
         }
     }
 
-
     void Update()
     {
-
         //TODO: Calculate next generation
+        updateTimer += Time.deltaTime;
+
+        if (updateTimer >= 0.05)
+        {
+            UpdateCells();
+            updateTimer = 0;
+        }
 
         //TODO: update buffer
-
-
         for (int y = 0; y < numberOfRows; y++)
         {
             for (int x = 0; x < numberOfColums; x++)
             {
                 cells[x, y].UpdateStatus();
             }
+        }
+    }
+
+    private void UpdateCells()
+    {
+        foreach (Transform aliveCell in aliveCellsList)
+        {
+
         }
     }
 }
