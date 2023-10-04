@@ -40,8 +40,8 @@ public class LifeScript : MonoBehaviour
             for (int x = 0; x < numberOfColums; x++)
             {
                 //Create our game cell objects, multiply by cellSize for correct world placement
-                Vector2 newPos = new Vector2(x * cellSize - Camera.main.orthographicSize *Camera.main.aspect,
-                y * cellSize - Camera.main.orthographicSize);
+                Vector2 newPos = new Vector2(x * cellSize - Camera.main.orthographicSize *Camera.main.aspect + cellSize / 1.5f,
+                y * cellSize - Camera.main.orthographicSize + cellSize / 1.5f);
 
                 var newCell = Instantiate(cellPrefab, newPos, Quaternion.identity);
                 newCell.transform.localScale = Vector2.one * cellSize;
@@ -54,8 +54,6 @@ public class LifeScript : MonoBehaviour
                 }
             }
         }
-        Camera.main.orthographicSize += 0.2f;
-
         for (int y = 0; y < numberOfRows; y++)
         {
             for (int x = 0; x < numberOfColums; x++)
