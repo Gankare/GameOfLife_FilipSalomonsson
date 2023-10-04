@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CellFaceScript : MonoBehaviour
+public class SpriteScript : MonoBehaviour
 {
     SpriteRenderer spriteRenderer;
     public List<Sprite> sprites = new List<Sprite>();

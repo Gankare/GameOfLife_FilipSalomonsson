@@ -8,9 +8,14 @@ public class CellScript : MonoBehaviour
     public bool alive;
     public int aliveNeigbors;
     public List <CellScript> neighborCells = new List<CellScript>();
+    private SpriteRenderer sprite;
+    private float alphafloat;
 
     SpriteRenderer spriteRenderer;
-
+    private void Start()
+    {
+        sprite = GetComponent<SpriteRenderer>();
+    }
     public void UpdateStatus()
     {
         spriteRenderer ??= GetComponent<SpriteRenderer>();
@@ -20,10 +25,6 @@ public class CellScript : MonoBehaviour
     public void OnTriggerEnter2D(Collider2D collision)
     {
         neighborCells.Add(collision.GetComponent<CellScript>());
-    }
-    public void OnTriggerExit2D(Collider2D collision)
-    {
-        neighborCells.Remove(collision.GetComponent<CellScript>());
     }
     public void ResetNeighborCells()
     {
@@ -41,6 +42,10 @@ public class CellScript : MonoBehaviour
     }
     public void spriteState()
     {
-
+        if (!alive && !nextAlive) 
+        {
+            alphafloat = 0.1f;
+            sprite.color = new Color(1, 1, 1, alphafloat);
+        }
     }
 }
