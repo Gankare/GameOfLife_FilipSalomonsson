@@ -39,4 +39,8 @@ public class CellScript : MonoBehaviour
             }
         }
     }
+    public void spriteState()
+    {
+
+    }
 }
