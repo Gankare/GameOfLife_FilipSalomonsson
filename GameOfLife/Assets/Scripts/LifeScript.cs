@@ -17,8 +17,11 @@ public class LifeScript : MonoBehaviour
 
     void Start()
     {
+        //From menu script
+        spawnChancePercentage = MenuScript.spawnPrecentage;
+        Camera.main.orthographicSize = MenuScript.cameraSize;
+
         //Lower framerate makes it easier to test and see whats happening.
-        QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 4;
 
         //Calculate our grid depending on size and cellSize
