@@ -6,10 +6,13 @@ public class LifeScript : MonoBehaviour
 {
     public GameObject cellPrefab;
     private CellScript[,] cells;
-    public List<Transform> aliveCellsList = new List<Transform>();
+
+    public List<CellScript> aliveCellsScript = new List<CellScript>();
+    public List<CellScript> allCells = new List<CellScript>();
+
     private float cellSize = 0.25f; //Size of our cells
     private int numberOfColums, numberOfRows;
-    private int spawnChancePercentage = 15;
+    private int spawnChancePercentage = 20;
     public float updateTimer;
 
     void Start()
@@ -22,9 +25,8 @@ public class LifeScript : MonoBehaviour
         numberOfColums = (int)Mathf.Floor((Camera.main.orthographicSize *
             Camera.main.aspect * 2) / cellSize);
         numberOfRows = (int)Mathf.Floor(Camera.main.orthographicSize * 2 / cellSize);
-
-        //Initiate our matrix array
         cells = new CellScript[numberOfColums, numberOfRows];
+        //Initiate our matrix array
 
         //Create all objects
 
@@ -35,9 +37,8 @@ public class LifeScript : MonoBehaviour
             for (int x = 0; x < numberOfColums; x++)
             {
                 //Create our game cell objects, multiply by cellSize for correct world placement
-                Vector2 newPos = new Vector2(x * cellSize - Camera.main.orthographicSize *
-                    Camera.main.aspect,
-                    y * cellSize - Camera.main.orthographicSize);
+                Vector2 newPos = new Vector2(x * cellSize - Camera.main.orthographicSize *Camera.main.aspect,
+                y * cellSize - Camera.main.orthographicSize);
 
                 var newCell = Instantiate(cellPrefab, newPos, Quaternion.identity);
                 newCell.transform.localScale = Vector2.one * cellSize;
@@ -46,30 +47,41 @@ public class LifeScript : MonoBehaviour
                 //Random check to see if it should be alive
                 if (Random.Range(0, 100) < spawnChancePercentage)
                 {
-                    cells[x, y].alive = true;
+                    cells[x, y].nextAlive = true;
                 }
+            }
+        }
+        Camera.main.orthographicSize += 0.2f;
 
+        for (int y = 0; y < numberOfRows; y++)
+        {
+            for (int x = 0; x < numberOfColums; x++)
+            {
+                allCells.Add(cells[x, y]);
+                cells[x, y].UpdateNeighbors();
                 cells[x, y].UpdateStatus();
-                if (cells[x, y].alive)
+                if (cells[x, y].nextAlive)
                 {
-                    aliveCellsList.Add(cells[x, y].GetComponent<Transform>());
+                    aliveCellsScript.Add(cells[x, y]);
                 }
             }
         }
     }
-
     void Update()
     {
-        //TODO: Calculate next generation
         updateTimer += Time.deltaTime;
 
-        if (updateTimer >= 0.05)
+        if (updateTimer >= 0.1f)
         {
-            UpdateCells();
+            StatusUpdate();
+            Reset();
+            NewAliveCells();
+            NextGenCells();
             updateTimer = 0;
         }
-
-        //TODO: update buffer
+    }
+    private void StatusUpdate()
+    {
         for (int y = 0; y < numberOfRows; y++)
         {
             for (int x = 0; x < numberOfColums; x++)
@@ -78,12 +90,54 @@ public class LifeScript : MonoBehaviour
             }
         }
     }
-
-    private void UpdateCells()
+    private void Reset()
     {
-        foreach (Transform aliveCell in aliveCellsList)
+        foreach (CellScript cell in allCells)
         {
-
+            cell.ResetNeighborCells();
+        }
+        aliveCellsScript.Clear();
+    }
+    private void NewAliveCells()
+    {
+        for (int y = 0; y < numberOfRows; y++)
+        {
+            for (int x = 0; x < numberOfColums; x++)
+            {
+                cells[x, y].UpdateNeighbors();
+                if (cells[x, y].nextAlive)
+                {
+                    aliveCellsScript.Add(cells[x, y]);
+                }
+            }
+        }
+    }
+    public void NextGenCells()
+    {
+        foreach (CellScript cell in aliveCellsScript)
+        {
+            if (cell.aliveNeigbors == 0)
+                cell.nextAlive = false;
+            else
+            CheckNeighborCell(cell);
+        } 
+    }
+    public void CheckNeighborCell(CellScript cell)
+    {
+        foreach (CellScript neigborCell in cell.neighborCells)
+        {
+            if (neigborCell.nextAlive && (neigborCell.aliveNeigbors < 2 || neigborCell.aliveNeigbors > 3))
+            {
+                neigborCell.nextAlive = false;
+            }
+            else if (!neigborCell.nextAlive && neigborCell.aliveNeigbors == 3)
+            {
+                neigborCell.nextAlive = true;
+            }
+            else
+            {
+                neigborCell.nextAlive = neigborCell.nextAlive;
+            }
         }
     }
 }
