@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CellScript : MonoBehaviour
 {
@@ -8,19 +9,31 @@ public class CellScript : MonoBehaviour
     public bool alive;
     public int aliveNeigbors;
     public List <CellScript> neighborCells = new List<CellScript>();
-    private SpriteRenderer sprite;
     private float alphafloat;
+    private SpriteRenderer spriteRenderer;
 
-    SpriteRenderer spriteRenderer;
-    private void Start()
-    {
-        sprite = GetComponent<SpriteRenderer>();
-    }
     public void UpdateStatus()
     {
         spriteRenderer ??= GetComponent<SpriteRenderer>();
+
+        if (alive && !nextAlive)
+        {
+            alphafloat = 0.75f;
+            spriteRenderer.color = new Color(0.17f, 0.17f, 0.45f, alphafloat);
+        }
+        else if (!alive && !nextAlive)
+        {
+            float decreasealpha = 0.25f;
+            alphafloat -= decreasealpha;
+            spriteRenderer.color = new Color(0.17f, 0.17f, 0.45f, alphafloat);
+        }
+        else 
+        {
+            alphafloat = 1;
+            spriteRenderer.color = new Color(1, 1, 1, alphafloat);
+        }
+
         alive = nextAlive;
-        spriteRenderer.enabled = alive;
     }
     public void OnTriggerEnter2D(Collider2D collision)
     {
@@ -38,14 +51,6 @@ public class CellScript : MonoBehaviour
             {
                 aliveNeigbors++;
             }
-        }
-    }
-    public void spriteState()
-    {
-        if (!alive && !nextAlive) 
-        {
-            alphafloat = 0.1f;
-            sprite.color = new Color(1, 1, 1, alphafloat);
         }
     }
 }
