@@ -21,10 +21,12 @@ public class LifeScript : MonoBehaviour
     private int lastStableCells;
 
     public static int generations;
-    public static bool simStable = false;
+    public static bool simStable;
 
     void Start()
     {
+        simStable = false;
+        generations = 0;
         //From menu script
         spawnChancePercentage = MenuScript.spawnPrecentage;
         Camera.main.orthographicSize = MenuScript.cameraSize;
