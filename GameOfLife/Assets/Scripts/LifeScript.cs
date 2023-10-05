@@ -13,7 +13,15 @@ public class LifeScript : MonoBehaviour
     private float cellSize = 0.25f; //Size of our cells
     private int numberOfColums, numberOfRows;
     private int spawnChancePercentage = 20;
-    public float updateTimer;
+    private float updateTimer;
+
+    //To see if simulation becomes stable
+    private int stableCells;
+    private int stableCellsInRow;
+    private int lastStableCells;
+
+    public static int generations;
+    public static bool simStable = false;
 
     void Start()
     {
@@ -72,13 +80,15 @@ public class LifeScript : MonoBehaviour
     {
         updateTimer += Time.deltaTime;
 
-        if (updateTimer >= 0.1f)
+        if (updateTimer >= 0.1f && !simStable)
         {
             StatusUpdate();
             Reset();
             NewAliveCells();
+            CheckStableCells();
             NextGenCells();
             updateTimer = 0;
+            generations++;
         }
     }
     private void StatusUpdate()
@@ -98,6 +108,7 @@ public class LifeScript : MonoBehaviour
             cell.ResetNeighborCells();
         }
         aliveCellsScript.Clear();
+        stableCells = 0;
     }
     private void NewAliveCells()
     {
@@ -108,6 +119,7 @@ public class LifeScript : MonoBehaviour
                 cells[x, y].UpdateNeighbors();
                 if (cells[x, y].nextAlive)
                 {
+                    stableCells++;
                     aliveCellsScript.Add(cells[x, y]);
                 }
             }
@@ -122,6 +134,22 @@ public class LifeScript : MonoBehaviour
             else
             CheckNeighborCell(cell);
         } 
+    }
+    public void CheckStableCells()
+    {
+        if (stableCells == lastStableCells)
+        {
+            stableCellsInRow++;
+        }
+        else
+            stableCellsInRow = 0;
+
+        if(stableCellsInRow > 20)
+        {
+            generations -= 20;
+            simStable = true;
+        }
+        lastStableCells = stableCells;
     }
     public void CheckNeighborCell(CellScript cell)
     {
