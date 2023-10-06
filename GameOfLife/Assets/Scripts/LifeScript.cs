@@ -25,6 +25,10 @@ public class LifeScript : MonoBehaviour
 
     void Start()
     {
+        //For less lag
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 15;
+
         simStable = false;
         generations = 0;
         //From menu script
@@ -82,7 +86,7 @@ public class LifeScript : MonoBehaviour
     {
         updateTimer += Time.deltaTime;
 
-        if (updateTimer >= 0.1f && !simStable)
+        if (updateTimer >= 0.05f && !simStable)
         {
             StatusUpdate();
             Reset();
