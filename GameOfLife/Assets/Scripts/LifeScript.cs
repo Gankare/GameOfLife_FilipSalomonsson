@@ -23,6 +23,8 @@ public class LifeScript : MonoBehaviour
     public static int generations;
     public static bool simStable;
 
+    private bool pauseSim = false;
+
     void Start()
     {
         //For less lag
@@ -85,16 +87,35 @@ public class LifeScript : MonoBehaviour
     void Update()
     {
         updateTimer += Time.deltaTime;
-
-        if (updateTimer >= 0.05f && !simStable)
+        if (!pauseSim)
         {
-            StatusUpdate();
-            Reset();
-            NewAliveCells();
-            CheckStableCells();
-            NextGenCells();
-            updateTimer = 0;
-            generations++;
+            //Loop
+            if (updateTimer >= 0.05f && !simStable)
+            {
+                StatusUpdate();
+                Reset();
+                NewAliveCells();
+                CheckStableCells();
+                NextGenCells();
+                updateTimer = 0;
+                generations++;
+            }
+        }
+        //pause button
+        if (Input.GetKeyDown(KeyCode.Space) && !pauseSim) 
+            pauseSim = true;
+        else if (Input.GetKeyDown(KeyCode.Space) && pauseSim)
+            pauseSim = false;
+        //Reset button
+        if(Input.GetKeyDown(KeyCode.R))
+        {
+            foreach(CellScript cell in allCells)
+            {
+                cell.nextAlive = false;
+                cell.UpdateStatus();
+                stableCellsInRow = 0;
+                generations = 0;
+            }
         }
     }
     private void StatusUpdate()
@@ -131,6 +152,22 @@ public class LifeScript : MonoBehaviour
             }
         }
     }
+    public void CheckStableCells()
+    {
+        if (stableCells == lastStableCells && stableCells != 0)
+        {
+            stableCellsInRow++;
+        }
+        else
+            stableCellsInRow = 0;
+
+        if(stableCellsInRow > 15)
+        {
+            generations -= 15;
+            simStable = true;
+        }
+        lastStableCells = stableCells;
+    }
     public void NextGenCells()
     {
         foreach (CellScript cell in aliveCellsScript)
@@ -138,24 +175,8 @@ public class LifeScript : MonoBehaviour
             if (cell.aliveNeigbors == 0)
                 cell.nextAlive = false;
             else
-            CheckNeighborCell(cell);
-        } 
-    }
-    public void CheckStableCells()
-    {
-        if (stableCells == lastStableCells)
-        {
-            stableCellsInRow++;
+                CheckNeighborCell(cell);
         }
-        else
-            stableCellsInRow = 0;
-
-        if(stableCellsInRow > 20)
-        {
-            generations -= 20;
-            simStable = true;
-        }
-        lastStableCells = stableCells;
     }
     public void CheckNeighborCell(CellScript cell)
     {

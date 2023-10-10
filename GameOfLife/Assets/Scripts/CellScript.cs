@@ -12,6 +12,33 @@ public class CellScript : MonoBehaviour
     private float alphafloat;
     private SpriteRenderer spriteRenderer;
 
+    private void Update()
+    {
+        //Click to alive a cell
+        if (Input.GetMouseButtonDown(0))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity);
+
+            if (hit.collider.transform == this.transform)
+            {
+                nextAlive = true;
+                UpdateStatus();
+            }
+        }
+        //Click to kill a cell
+        if (Input.GetMouseButtonDown(1))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity);
+
+            if (hit.collider.transform == this.transform)
+            {
+                nextAlive = false;
+                UpdateStatus();
+            }
+        }
+    }
     public void UpdateStatus()
     {
         spriteRenderer ??= GetComponent<SpriteRenderer>();
